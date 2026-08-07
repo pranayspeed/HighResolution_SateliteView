@@ -42,6 +42,7 @@ const mime = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".png": "image/png",
+  ".pdf": "application/pdf",
 };
 
 async function readJsonBody(request) {
@@ -64,6 +65,7 @@ function runCapture(config) {
       `--buffer=${config.buffer}`,
       `--width=${config.width}`,
       `--height=${config.height}`,
+      `--format=${config.format}`,
       `--name=${config.name || "region"}`,
     ];
     const child = spawn(process.execPath, args, {
@@ -100,8 +102,9 @@ createServer(async (request, response) => {
       const height = Math.max(480, Math.min(4320, Number(body.height) || 2160));
       const buffer = Math.max(0, Math.min(100000, Number(body.buffer) || 0));
       const points = String(body.points || "").slice(0, 20000);
+      const format = body.format === "pdf" ? "pdf" : "png";
       const name = String(body.name || "region").replace(/[^a-z0-9_-]+/gi, "-").replace(/^-|-$/g, "").slice(0, 60) || "region";
-      const outputPath = await runCapture({ points, buffer, width, height, name });
+      const outputPath = await runCapture({ points, buffer, width, height, format, name });
       const filename = outputPath.split("/").pop();
       response.writeHead(200, { "Content-Type": mime[".json"], "Cache-Control": "no-store" });
       response.end(JSON.stringify({ filename, downloadUrl: `/output/${filename}` }));

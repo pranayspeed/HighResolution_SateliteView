@@ -6,10 +6,11 @@ Photorealistic 3D Tiles around one or more geographic locations.
 The utility:
 
 - accepts one `latitude, longitude` pair per line;
+- displays every target as a numbered, clickable marker in the interactive Cesium view;
 - expands the complete point-set bounds by a buffer in meters;
 - masks all tiles outside the buffered rectangle;
 - uses a zero-roll, negative-90-degree top camera;
-- supports exact 4K, 5K, 8K, and HD PNG output;
+- supports exact 4K, 5K, 8K, and HD PNG or PDF output;
 - stores captures in `output/`.
 
 ## Interactive use
@@ -41,6 +42,7 @@ python3 main.py capture \
   --buffer=500 \
   --width=3840 \
   --height=2160 \
+  --format=pdf \
   --name=example-region
 ```
 

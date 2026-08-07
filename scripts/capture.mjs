@@ -29,6 +29,7 @@ async function main() {
   const buffer = Math.max(0, Math.min(100000, Number(argument("buffer", "500"))));
   const width = Math.max(640, Math.min(7680, Number(argument("width", "3840"))));
   const height = Math.max(480, Math.min(4320, Number(argument("height", "2160"))));
+  const format = argument("format", "png").toLowerCase() === "pdf" ? "pdf" : "png";
   const name = safeName(argument("name", "region"));
   const noServer = process.argv.includes("--no-server");
   const baseUrl = process.env.CESIUM_CAPTURE_URL || "http://127.0.0.1:3300/";
@@ -56,8 +57,19 @@ async function main() {
     await page.waitForFunction(() => window.__CESIUM_CAPTURE_READY === true, undefined, { timeout:180000 });
     await page.waitForTimeout(3500);
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const outputPath = resolve(outputRoot, `${name}_top_view_${width}x${height}_${timestamp}.png`);
-    await page.screenshot({ path:outputPath, type:"png" });
+    const outputPath = resolve(outputRoot, `${name}_top_view_${width}x${height}_${timestamp}.${format}`);
+    if (format === "pdf") {
+      // Chromium does not reliably print WebGL canvases. Capture the completed
+      // Cesium frame first, then place that exact image on a borderless PDF page.
+      const screenshot = await page.screenshot({ type:"png" });
+      const pdfPage = await browser.newPage({ viewport:{ width, height }, deviceScaleFactor:1 });
+      const imageUrl = `data:image/png;base64,${screenshot.toString("base64")}`;
+      await pdfPage.setContent(`<style>@page{size:${width}px ${height}px;margin:0}html,body{margin:0;width:100%;height:100%;overflow:hidden}img{display:block;width:100%;height:100%;object-fit:fill}</style><img src="${imageUrl}">`);
+      await pdfPage.pdf({ path:outputPath, width:`${width}px`, height:`${height}px`, printBackground:true, margin:{ top:0, right:0, bottom:0, left:0 } });
+      await pdfPage.close();
+    } else {
+      await page.screenshot({ path:outputPath, type:"png" });
+    }
     await browser.close();
     console.log(`CAPTURE=${outputPath}`);
   } finally {

@@ -3,6 +3,7 @@ const pointsInput = document.querySelector("#points");
 const bufferInput = document.querySelector("#buffer");
 const regionNameInput = document.querySelector("#regionName");
 const resolutionInput = document.querySelector("#resolution");
+const formatInput = document.querySelector("#format");
 const previewButton = document.querySelector("#preview");
 const captureButton = document.querySelector("#capture");
 const status = document.querySelector("#status");
@@ -76,6 +77,38 @@ function dimensionsMeters(bounds) {
 let tileset;
 let clippingPolygons;
 let loadingTimer;
+const targetEntities = [];
+
+function showTargets(points) {
+  targetEntities.splice(0).forEach((entity) => viewer.entities.remove(entity));
+  points.forEach((point, index) => {
+    const entity = viewer.entities.add({
+      name:`Target ${index + 1}`,
+      description:`${point.latitude.toFixed(6)}, ${point.longitude.toFixed(6)}`,
+      position:Cesium.Cartesian3.fromDegrees(point.longitude, point.latitude, 0),
+      point:{
+        pixelSize:14,
+        color:Cesium.Color.fromCssColorString("#ff3b30"),
+        outlineColor:Cesium.Color.WHITE,
+        outlineWidth:3,
+        heightReference:Cesium.HeightReference.CLAMP_TO_3D_TILE,
+        disableDepthTestDistance:Number.POSITIVE_INFINITY,
+      },
+      label:{
+        text:String(index + 1),
+        font:"700 14px system-ui",
+        fillColor:Cesium.Color.WHITE,
+        outlineColor:Cesium.Color.fromCssColorString("#7f1d1d"),
+        outlineWidth:4,
+        style:Cesium.LabelStyle.FILL_AND_OUTLINE,
+        pixelOffset:new Cesium.Cartesian2(0, -24),
+        heightReference:Cesium.HeightReference.CLAMP_TO_3D_TILE,
+        disableDepthTestDistance:Number.POSITIVE_INFINITY,
+      },
+    });
+    targetEntities.push(entity);
+  });
+}
 
 function waitForTiles(timeoutMs = 30000) {
   return new Promise((resolveReady) => {
@@ -119,6 +152,7 @@ function installClipping(bounds) {
 async function applyRegion(points, bufferMeters) {
   window.__CESIUM_CAPTURE_READY = false;
   const bounds = bufferedBounds(points, bufferMeters);
+  showTargets(points);
   installClipping(bounds);
   viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
   viewer.camera.setView({
@@ -139,7 +173,7 @@ function currentConfig() {
   const points = parsePoints(pointsInput.value);
   const buffer = Math.max(0, Number(bufferInput.value) || 0);
   const [width, height] = resolutionInput.value.split("x").map(Number);
-  return { points, buffer, width, height, name:regionNameInput.value.trim() || "region" };
+  return { points, buffer, width, height, format:formatInput.value, name:regionNameInput.value.trim() || "region" };
 }
 
 previewButton.addEventListener("click", async () => {
@@ -160,13 +194,13 @@ captureButton.addEventListener("click", async () => {
     const config = currentConfig();
     captureButton.disabled = true;
     captureButton.textContent = "Capturing…";
-    status.textContent = `Rendering ${config.width} × ${config.height} pixels. This can take up to a minute.`;
+    status.textContent = `Rendering ${config.width} × ${config.height} ${config.format.toUpperCase()}. This can take up to a minute.`;
     const response = await fetch("/capture", {
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body:JSON.stringify({
         points:config.points.map((point) => `${point.latitude},${point.longitude}`).join(";"),
-        buffer:config.buffer, width:config.width, height:config.height, name:config.name,
+        buffer:config.buffer, width:config.width, height:config.height, format:config.format, name:config.name,
       }),
     });
     const result = await response.json();
@@ -180,9 +214,16 @@ captureButton.addEventListener("click", async () => {
     status.textContent = error.message;
   } finally {
     captureButton.disabled = false;
-    captureButton.textContent = "Capture high-resolution PNG";
+    captureButton.textContent = "Save top view";
   }
 });
+
+viewer.screenSpaceEventHandler.setInputAction((movement) => {
+  const picked = viewer.scene.pick(movement.position);
+  const entity = picked?.id;
+  if (!entity || !targetEntities.includes(entity)) return;
+  status.textContent = `${entity.name} · ${entity.description.getValue(Cesium.JulianDate.now())}`;
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
 tileset = await Cesium.createGooglePhotorealistic3DTileset();
 tileset.maximumScreenSpaceError = params.get("capture") === "1" ? 2 : 8;

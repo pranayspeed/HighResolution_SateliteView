@@ -32,6 +32,7 @@ def build_parser() -> argparse.ArgumentParser:
     capture.add_argument("--buffer", type=float, default=500, help="Buffer in meters.")
     capture.add_argument("--width", type=int, default=3840, help="Output width in pixels.")
     capture.add_argument("--height", type=int, default=2160, help="Output height in pixels.")
+    capture.add_argument("--format", choices=("png", "pdf"), default="png", help="Output format.")
     capture.add_argument("--name", default="region", help="Output filename prefix.")
     return parser
 
@@ -65,6 +66,7 @@ def run_capture(node: str, args: argparse.Namespace) -> int:
         f"--buffer={args.buffer}",
         f"--width={args.width}",
         f"--height={args.height}",
+        f"--format={args.format}",
         f"--name={args.name}",
     ]
     return subprocess.call(command, cwd=ROOT)
