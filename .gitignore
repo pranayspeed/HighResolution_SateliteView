@@ -4,3 +4,5 @@ output/*
 .env.local
 .DS_Store
 npm-debug.log*
+__pycache__/
+*.py[cod]
