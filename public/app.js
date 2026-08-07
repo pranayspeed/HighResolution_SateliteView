@@ -34,7 +34,6 @@ if (viewer.scene.skyBox) viewer.scene.skyBox.show = false;
 if (viewer.scene.sun) viewer.scene.sun.show = false;
 if (viewer.scene.moon) viewer.scene.moon.show = false;
 viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
-viewer.cesiumWidget.creditContainer.style.display = "none";
 
 function parsePoints(value) {
   const rows = value.split(/[;\n]+/).map((row) => row.trim()).filter(Boolean);

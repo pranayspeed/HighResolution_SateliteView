@@ -25,6 +25,8 @@ button:disabled { cursor:wait; opacity:.6; }
 .loading i { width:40px; height:40px; border:3px solid #dbe4f0; border-top-color:var(--blue); border-radius:50%; animation:spin .9s linear infinite; }
 #app[data-ready="true"] .loading { display:none; }
 .error { position:absolute; z-index:20; inset:50% auto auto 50%; transform:translate(-50%,-50%); padding:22px; background:#fff; border:1px solid #fecaca; color:#991b1b; }
+.attribution { position:absolute; z-index:6; right:8px; bottom:28px; max-width:calc(100% - 16px); padding:5px 8px; border-radius:4px; background:rgba(15,23,42,.78); color:#fff; font-size:10px; font-style:normal; letter-spacing:.01em; line-height:1.25; pointer-events:none; }
+.cesium-viewer-bottom { z-index:6; }
 body.capture .panel { display:none; }
 @media (max-width:700px) {
   .panel { left:12px; right:12px; top:12px; width:auto; max-height:calc(100% - 24px); }

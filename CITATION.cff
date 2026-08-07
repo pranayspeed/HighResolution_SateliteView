@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "High-Resolution Satellite View"
+type: software
+version: 1.0.0
+date-released: 2026-08-07
+authors:
+  - given-names: "Pranay"
+    family-names: "Meshram"
+    alias: "Pranay"
+repository-code: "https://github.com/pranayspeed/HighResolution_SateliteView"
+url: "https://github.com/pranayspeed/HighResolution_SateliteView"
+abstract: >-
+  An interactive CesiumJS utility for viewing geographic target points and
+  exporting buffered, photorealistic top-down views as high-resolution PNG or
+  PDF files.
+keywords:
+  - CesiumJS
+  - geospatial visualization
+  - satellite imagery
+  - top-down view
+  - photorealistic 3D tiles
+license: "NOASSERTION"
+å
