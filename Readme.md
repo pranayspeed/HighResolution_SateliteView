@@ -23,9 +23,12 @@ python3 main.py
 ```
 
 Open <http://localhost:3300>, enter the locations and buffer, preview the
-bounds, then select **Capture high-resolution PNG**.
+bounds, choose PNG or PDF, then select **Save top view**.
 
-Set a Cesium ion token in `.env.local` before starting the utility:
+Create or copy an access token from the official
+[Cesium ion Access Tokens guide](https://cesium.com/learn/ion/cesium-ion-access-tokens/).
+For this viewer, the token needs the public `assets:read` scope. Then set the
+token in `.env.local` before starting the utility:
 
 ```text
 CESIUM_ION_TOKEN=your_token_here
