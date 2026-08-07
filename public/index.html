@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cesium Photorealistic Top-View Capture</title>
+    <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.130/Build/Cesium/Widgets/widgets.css" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script defer src="/config.js"></script>
+    <script defer src="https://cesium.com/downloads/cesiumjs/releases/1.130/Build/Cesium/Cesium.js"></script>
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <main id="app" data-ready="false">
+      <div id="cesiumContainer"></div>
+      <section class="panel">
+        <div class="heading">
+          <span>Cesium utility</span>
+          <h1>Photorealistic top-view capture</h1>
+        </div>
+        <label>
+          Region name
+          <input id="regionName" value="region" />
+        </label>
+        <label>
+          Geographic locations
+          <textarea id="points" rows="5" spellcheck="false" placeholder="34.4500, -116.2500&#10;34.4550, -116.2400"></textarea>
+          <small>One latitude, longitude pair per line</small>
+        </label>
+        <div class="row">
+          <label>
+            Buffer
+            <div class="unit"><input id="buffer" type="number" min="0" max="100000" step="10" value="500" /><span>meters</span></div>
+          </label>
+          <label>
+            Output size
+            <select id="resolution">
+              <option value="3840x2160">4K · 3840 × 2160</option>
+              <option value="5120x2880">5K · 5120 × 2880</option>
+              <option value="7680x4320">8K · 7680 × 4320</option>
+              <option value="1920x1080">HD · 1920 × 1080</option>
+            </select>
+          </label>
+        </div>
+        <div class="actions">
+          <button id="preview" type="button">Preview bounds</button>
+          <button id="capture" type="button">Capture high-resolution PNG</button>
+        </div>
+        <p id="status">Enter at least one location.</p>
+      </section>
+      <div class="loading"><i></i><span>Loading photorealistic 3D tiles</span></div>
+      <div class="error" hidden></div>
+    </main>
+  </body>
+</html>
